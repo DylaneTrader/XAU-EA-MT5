@@ -28,6 +28,7 @@ def test_mt5_connection():
     logger.info(f"Terminal Info: {mt5.terminal_info()}")
     
     mt5.shutdown()
+    logger.info("MT5 connection test PASSED")
     return True
 
 

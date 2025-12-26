@@ -132,6 +132,11 @@ class ModelManager:
             
         Returns:
             Normalized features
+            
+        Note:
+            The scaler must be fitted during training before calling this method.
+            If the scaler is not fitted, this will raise an exception.
+            Use train_simple() to fit the scaler on training data.
         """
         if len(data.shape) == 1:
             data = data.reshape(-1, 1)

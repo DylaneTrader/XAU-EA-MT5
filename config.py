@@ -35,6 +35,7 @@ USE_ATR = True
 # Data Parameters
 BARS_TO_LOAD = 1000  # Number of historical bars to load
 PREDICTION_INTERVAL = 60  # Seconds between predictions
+MODEL_PATH = 'transformer_ea_model.pth'  # Path to save/load model
 
 # Feature Engineering
 FEATURES = [

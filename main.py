@@ -89,10 +89,9 @@ class TransformerEA:
         )
         
         # Try to load existing model or initialize new one
-        model_path = 'transformer_ea_model.pth'
-        if os.path.exists(model_path):
+        if os.path.exists(config.MODEL_PATH):
             try:
-                self.model_manager.load_model(model_path)
+                self.model_manager.load_model(config.MODEL_PATH)
                 logger.info("Loaded existing model")
             except Exception as e:
                 logger.warning(f"Could not load model: {e}. Will use untrained model.")
@@ -245,7 +244,7 @@ class TransformerEA:
         # Save model if trained
         if self.model_manager and self.model_manager.is_trained:
             try:
-                self.model_manager.save_model('transformer_ea_model.pth')
+                self.model_manager.save_model(config.MODEL_PATH)
             except Exception as e:
                 logger.error(f"Error saving model: {e}")
         

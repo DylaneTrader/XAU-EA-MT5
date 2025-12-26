@@ -177,9 +177,8 @@ def train_model(num_bars=5000, epochs=20, test_size=0.2):
                 f"HOLD: {np.sum(predictions==1)}, SELL: {np.sum(predictions==0)}")
     
     # Save model
-    model_path = 'transformer_ea_model.pth'
-    logger.info(f"\nSaving model to {model_path}...")
-    model_manager.save_model(model_path)
+    logger.info(f"\nSaving model to {config.MODEL_PATH}...")
+    model_manager.save_model(config.MODEL_PATH)
     
     logger.info("=" * 60)
     logger.info("Training completed successfully!")
