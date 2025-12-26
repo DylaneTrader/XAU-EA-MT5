@@ -34,10 +34,6 @@ class TransformerPricePredictor(nn.Module):
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         
-        # Load pretrained transformer config
-        config = AutoConfig.from_pretrained(model_name)
-        config.hidden_size = hidden_dim
-        
         # Input projection layer to match transformer dimensions
         self.input_projection = nn.Linear(input_dim, hidden_dim)
         
@@ -143,10 +139,9 @@ class ModelManager:
         if len(data.shape) == 1:
             data = data.reshape(-1, 1)
         
-        if not self.is_trained:
-            return self.scaler.fit_transform(data)
-        else:
-            return self.scaler.transform(data)
+        # Only transform data, never fit on prediction data
+        # Scaler should be fitted during training only
+        return self.scaler.transform(data)
     
     def train_simple(self, X, y, epochs=10, lr=0.001):
         """
@@ -158,6 +153,13 @@ class ModelManager:
             epochs: Number of training epochs
             lr: Learning rate
         """
+        # Fit scaler on training data
+        if not self.is_trained:
+            # Reshape X for scaler fitting: (samples, seq_len, features) -> (samples*seq_len, features)
+            X_reshaped = X.reshape(-1, X.shape[-1])
+            self.scaler.fit(X_reshaped)
+            logger.info("Scaler fitted on training data")
+        
         self.model.train()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
         criterion = nn.CrossEntropyLoss()

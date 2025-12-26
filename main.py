@@ -60,7 +60,9 @@ class TransformerEA:
         logger.info(f"MT5 initialized: {mt5.version()}")
         
         # Login if credentials provided
-        if config.MT5_LOGIN and config.MT5_PASSWORD and config.MT5_SERVER:
+        if (config.MT5_LOGIN is not None and 
+            config.MT5_PASSWORD is not None and 
+            config.MT5_SERVER is not None):
             if not mt5.login(config.MT5_LOGIN, config.MT5_PASSWORD, config.MT5_SERVER):
                 logger.error("MT5 login failed")
                 mt5.shutdown()

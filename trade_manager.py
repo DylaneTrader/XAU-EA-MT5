@@ -188,7 +188,7 @@ class TradeManager:
         result = mt5.order_send(request)
         
         if result.retcode != mt5.TRADE_RETCODE_DONE:
-            logger.error(f"Close order failed: {result.retcode}")
+            logger.error(f"Close order failed: {result.retcode} - {result.comment}")
             return None
         
         logger.info(f"Position closed: {position.ticket}")

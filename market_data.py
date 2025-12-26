@@ -71,8 +71,11 @@ class MarketDataHandler:
         Returns:
             DataFrame with added indicators
         """
-        if df is None or len(df) < 50:
-            logger.warning("Insufficient data for indicators")
+        # Minimum bars needed: 50 for SMA, 26 for MACD, 14 for RSI
+        min_bars_required = 50
+        
+        if df is None or len(df) < min_bars_required:
+            logger.warning(f"Insufficient data for indicators: {len(df) if df is not None else 0} < {min_bars_required}")
             return df
         
         # RSI
