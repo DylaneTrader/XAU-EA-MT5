@@ -84,7 +84,7 @@ def verify_installation():
         # Test model creation
         logger.info("Testing Transformer model...")
         from transformer_model import ModelManager
-        model = ModelManager("distilbert-base-uncased", 11, 60)
+        model = ModelManager(11, 60)
         logger.info("✓ Model created successfully")
         
         return True

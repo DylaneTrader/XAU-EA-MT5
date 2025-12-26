@@ -80,7 +80,6 @@ def test_transformer_model():
     
     num_features = len(config.FEATURES)
     model_manager = ModelManager(
-        config.MODEL_NAME, 
         num_features, 
         config.SEQUENCE_LENGTH
     )
@@ -133,7 +132,6 @@ def test_full_pipeline():
     # Initialize model
     num_features = len(config.FEATURES)
     model_manager = ModelManager(
-        config.MODEL_NAME, 
         num_features, 
         config.SEQUENCE_LENGTH
     )

@@ -22,7 +22,9 @@ RISK_PERCENT = 1.0  # Risk percentage per trade
 # Model Parameters
 SEQUENCE_LENGTH = 60  # Number of candles to look back
 PREDICTION_THRESHOLD = 0.6  # Confidence threshold for trade signals
-MODEL_NAME = "distilbert-base-uncased"  # Transformer model to use
+MODEL_HIDDEN_DIM = 128  # Transformer hidden dimension
+MODEL_NUM_LAYERS = 4  # Number of transformer encoder layers
+MODEL_NUM_HEADS = 8  # Number of attention heads
 
 # Technical Indicators
 USE_RSI = True

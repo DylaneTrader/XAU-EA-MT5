@@ -126,7 +126,9 @@ Press `Ctrl+C` to gracefully stop the EA. It will:
 |-----------|-------------|---------|
 | `SEQUENCE_LENGTH` | Lookback period (candles) | 60 |
 | `PREDICTION_THRESHOLD` | Minimum confidence for trade | 0.6 |
-| `MODEL_NAME` | Transformer model | "distilbert-base-uncased" |
+| `MODEL_HIDDEN_DIM` | Transformer hidden dimension | 128 |
+| `MODEL_NUM_LAYERS` | Number of transformer layers | 4 |
+| `MODEL_NUM_HEADS` | Number of attention heads | 8 |
 | `PREDICTION_INTERVAL` | Time between predictions (sec) | 60 |
 
 ## How It Works
@@ -151,15 +153,20 @@ Press `Ctrl+C` to gracefully stop the EA. It will:
 
 ## Transformer Model
 
-The EA uses a custom Transformer architecture specifically adapted for time series forecasting:
+The EA uses a custom Transformer architecture built with PyTorch specifically adapted for time series forecasting:
 
-- **Input Layer**: Projects market features to hidden dimension
-- **Transformer Encoder**: 4 layers with 8 attention heads
-- **Classification Head**: Outputs BUY/SELL/HOLD probabilities
+- **Input Layer**: Projects market features to hidden dimension (128)
+- **Transformer Encoder**: 4 layers with 8 attention heads, multi-head self-attention
+- **Classification Head**: Outputs BUY/SELL/HOLD probabilities with softmax
+
+The model architecture uses PyTorch's native transformer layers (not pre-trained language models), making it:
+- Lightweight and fast
+- Customizable for financial data
+- Easy to train on historical market data
 
 The model can be:
 - Used untrained (random initialization) for initial testing
-- Trained on historical data (implement your own training script)
+- Trained on historical data using the provided training script
 - Loaded from saved checkpoint (automatically saved/loaded)
 
 ## Monitoring

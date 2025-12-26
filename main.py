@@ -85,7 +85,7 @@ class TransformerEA:
         # Initialize model manager
         num_features = len(config.FEATURES)
         self.model_manager = ModelManager(
-            config.MODEL_NAME, num_features, self.sequence_length
+            num_features, self.sequence_length
         )
         
         # Try to load existing model or initialize new one

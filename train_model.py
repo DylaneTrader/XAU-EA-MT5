@@ -135,7 +135,7 @@ def train_model(num_bars=5000, epochs=20, test_size=0.2):
     
     logger.info(f"Training data shape - X: {X.shape}, y: {y.shape}")
     
-    # Split data (no shuffle for time series, no random_state needed)
+    # Split data - shuffle=False preserves temporal order for time series
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, shuffle=False
     )
@@ -147,7 +147,6 @@ def train_model(num_bars=5000, epochs=20, test_size=0.2):
     logger.info("\nInitializing Transformer model...")
     num_features = len(config.FEATURES)
     model_manager = ModelManager(
-        config.MODEL_NAME, 
         num_features, 
         config.SEQUENCE_LENGTH
     )

@@ -5,7 +5,6 @@ Transformer-based Price Prediction Model for MT5 EA
 import torch
 import torch.nn as nn
 import numpy as np
-from transformers import AutoModel, AutoConfig
 from sklearn.preprocessing import StandardScaler
 import logging
 
@@ -15,16 +14,15 @@ logger = logging.getLogger(__name__)
 
 class TransformerPricePredictor(nn.Module):
     """
-    Transformer model for price prediction using pretrained language model
+    Transformer model for price prediction using PyTorch transformer layers
     adapted for time series forecasting
     """
     
-    def __init__(self, model_name, input_dim, hidden_dim=128, num_labels=3):
+    def __init__(self, input_dim, hidden_dim=128, num_labels=3):
         """
         Initialize the Transformer predictor
         
         Args:
-            model_name: Name of pretrained transformer model
             input_dim: Number of input features
             hidden_dim: Hidden dimension size
             num_labels: Number of output classes (BUY, SELL, HOLD)
@@ -112,16 +110,15 @@ class TransformerPricePredictor(nn.Module):
 class ModelManager:
     """Manager for training and using the Transformer model"""
     
-    def __init__(self, model_name, input_dim, sequence_length):
+    def __init__(self, input_dim, sequence_length):
         """
         Initialize the model manager
         
         Args:
-            model_name: Transformer model name
             input_dim: Number of input features
             sequence_length: Length of input sequences
         """
-        self.model = TransformerPricePredictor(model_name, input_dim)
+        self.model = TransformerPricePredictor(input_dim)
         self.scaler = StandardScaler()
         self.sequence_length = sequence_length
         self.is_trained = False
