@@ -75,7 +75,6 @@ def verify_installation():
         import numpy
         import pandas
         import torch
-        import transformers
         import sklearn
         import ta
         
@@ -98,6 +97,7 @@ def create_env_example():
     logger.info("\nCreating .env.example file...")
     
     env_content = """# MetaTrader 5 Configuration (Optional for demo accounts)
+# These credentials can be set directly in config.py
 # Uncomment and fill in your credentials for live accounts
 
 # MT5_LOGIN=your_login_here
@@ -108,6 +108,11 @@ def create_env_example():
 # MT5_LOGIN=12345678
 # MT5_PASSWORD=MyPassword123
 # MT5_SERVER=MetaQuotes-Demo
+
+# Note: Update the corresponding variables in config.py:
+# config.MT5_LOGIN = your_login
+# config.MT5_PASSWORD = your_password
+# config.MT5_SERVER = your_server
 """
     
     try:
