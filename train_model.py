@@ -197,7 +197,9 @@ def main():
     logger.info(f"Symbol: {config.SYMBOL}")
     logger.info(f"Timeframe: {config.TIMEFRAME}")
     logger.info(f"Sequence Length: {config.SEQUENCE_LENGTH}")
-    logger.info(f"Model: {config.MODEL_NAME}")
+    logger.info(f"Hidden Dim: {config.MODEL_HIDDEN_DIM}")
+    logger.info(f"Num Layers: {config.MODEL_NUM_LAYERS}")
+    logger.info(f"Num Heads: {config.MODEL_NUM_HEADS}")
     logger.info("=" * 60)
     
     success = train_model(num_bars=5000, epochs=20)
