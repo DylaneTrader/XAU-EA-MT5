@@ -128,61 +128,185 @@ def prepare_sequences(features, labels, sequence_length):
     return np.array(X), np.array(y)
 
 
-def train_model_fn(model, X_train, y_train, epochs, device):
-    """Train the model with progress tracking"""
+def train_model_fn(model, X_train, y_train, epochs, device, batch_size=32):
+    """Train the model with progress tracking using mini-batches"""
+    import time
+    
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    
-    # Convert to tensors
-    X_train_tensor = torch.FloatTensor(X_train).to(device)
-    y_train_tensor = torch.LongTensor(y_train).to(device)
     
     # Training loop
     model.train()
     history = {'loss': [], 'accuracy': []}
     
+    # Create visual containers
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        epoch_metric = st.empty()
+    with col2:
+        time_metric = st.empty()
+    with col3:
+        eta_metric = st.empty()
+    
     progress_bar = st.progress(0)
-    status_text = st.empty()
+    status_container = st.empty()
+    
+    # Create live chart containers
+    chart_col1, chart_col2 = st.columns(2)
+    with chart_col1:
+        loss_chart = st.empty()
+    with chart_col2:
+        acc_chart = st.empty()
+    
+    n_samples = len(X_train)
+    n_batches = (n_samples + batch_size - 1) // batch_size
+    
+    start_time = time.time()
+    epoch_times = []
     
     for epoch in range(epochs):
-        # Forward pass
-        outputs = model(X_train_tensor)
-        loss = criterion(outputs, y_train_tensor)
+        epoch_start = time.time()
+        epoch_loss = 0
+        epoch_correct = 0
+        epoch_total = 0
         
-        # Backward pass
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        # Shuffle data each epoch
+        indices = np.random.permutation(n_samples)
         
-        # Calculate accuracy
-        _, predicted = torch.max(outputs.data, 1)
-        accuracy = (predicted == y_train_tensor).sum().item() / len(y_train_tensor)
+        # Mini-batch training
+        for batch_idx in range(n_batches):
+            start_idx = batch_idx * batch_size
+            end_idx = min(start_idx + batch_size, n_samples)
+            batch_indices = indices[start_idx:end_idx]
+            
+            # Get batch data
+            X_batch = torch.FloatTensor(X_train[batch_indices]).to(device)
+            y_batch = torch.LongTensor(y_train[batch_indices]).to(device)
+            
+            # Forward pass
+            outputs = model(X_batch)
+            loss = criterion(outputs, y_batch)
+            
+            # Backward pass
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            # Track metrics
+            epoch_loss += loss.item() * len(batch_indices)
+            _, predicted = torch.max(outputs.data, 1)
+            epoch_correct += (predicted == y_batch).sum().item()
+            epoch_total += len(batch_indices)
+            
+            # Clear GPU cache periodically
+            if batch_idx % 10 == 0:
+                if device.type == 'cuda':
+                    torch.cuda.empty_cache()
+        
+        # Calculate epoch metrics
+        epoch_time = time.time() - epoch_start
+        epoch_times.append(epoch_time)
+        avg_loss = epoch_loss / epoch_total
+        accuracy = epoch_correct / epoch_total
         
         # Store metrics
-        history['loss'].append(loss.item())
+        history['loss'].append(avg_loss)
         history['accuracy'].append(accuracy)
         
-        # Update progress
+        # Calculate time estimates
+        elapsed_time = time.time() - start_time
+        avg_epoch_time = np.mean(epoch_times)
+        remaining_epochs = epochs - (epoch + 1)
+        eta_seconds = avg_epoch_time * remaining_epochs
+        
+        # Format time strings
+        elapsed_str = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+        eta_str = time.strftime("%H:%M:%S", time.gmtime(eta_seconds))
+        
+        # Update metrics display
+        epoch_metric.metric("Époque", f"{epoch+1}/{epochs}", f"{(epoch+1)/epochs*100:.1f}%")
+        time_metric.metric("Temps écoulé", elapsed_str, f"{epoch_time:.2f}s/epoch")
+        eta_metric.metric("Temps restant", eta_str if remaining_epochs > 0 else "Terminé!")
+        
+        # Update progress bar
         progress = (epoch + 1) / epochs
         progress_bar.progress(progress)
-        status_text.text(f"Epoch {epoch+1}/{epochs} - Loss: {loss.item():.4f} - Accuracy: {accuracy:.4f}")
+        
+        # Update status with detailed info
+        status_container.markdown(f"""
+        <div style='background-color: #f0f2f6; padding: 15px; border-radius: 10px; margin: 10px 0;'>
+            <h4 style='margin: 0 0 10px 0; color: #1f77b4;'>📊 Époque {epoch+1}/{epochs}</h4>
+            <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 10px;'>
+                <div><strong>Loss:</strong> {avg_loss:.6f}</div>
+                <div><strong>Accuracy:</strong> {accuracy*100:.2f}%</div>
+                <div><strong>Samples/sec:</strong> {n_samples/epoch_time:.0f}</div>
+                <div><strong>Batches:</strong> {n_batches}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Update live charts
+        if len(history['loss']) > 0:
+            # Loss chart
+            loss_df = pd.DataFrame({
+                'Époque': range(1, len(history['loss']) + 1),
+                'Loss': history['loss']
+            })
+            loss_chart.line_chart(loss_df.set_index('Époque'), use_container_width=True)
+            
+            # Accuracy chart
+            acc_df = pd.DataFrame({
+                'Époque': range(1, len(history['accuracy']) + 1),
+                'Accuracy': [a * 100 for a in history['accuracy']]
+            })
+            acc_chart.line_chart(acc_df.set_index('Époque'), use_container_width=True)
+    
+    # Final summary
+    total_time = time.time() - start_time
+    total_time_str = time.strftime("%H:%M:%S", time.gmtime(total_time))
+    
+    status_container.markdown(f"""
+    <div style='background-color: #d4edda; padding: 15px; border-radius: 10px; margin: 10px 0; border: 2px solid #28a745;'>
+        <h4 style='margin: 0 0 10px 0; color: #28a745;'>✅ Entraînement terminé!</h4>
+        <div><strong>Durée totale:</strong> {total_time_str}</div>
+        <div><strong>Loss finale:</strong> {history['loss'][-1]:.6f}</div>
+        <div><strong>Accuracy finale:</strong> {history['accuracy'][-1]*100:.2f}%</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     return model, history
 
 
-def evaluate_model(model, X_test, y_test, device):
-    """Evaluate model on test set"""
+def evaluate_model(model, X_test, y_test, device, batch_size=32):
+    """Evaluate model on test set using mini-batches"""
     model.eval()
     
-    X_test_tensor = torch.FloatTensor(X_test).to(device)
+    all_predictions = []
+    all_confidences = []
+    
+    n_samples = len(X_test)
+    n_batches = (n_samples + batch_size - 1) // batch_size
     
     with torch.no_grad():
-        outputs = model(X_test_tensor)
-        _, predictions = torch.max(outputs.data, 1)
-        confidences = torch.max(outputs.data, 1)[0]
+        for batch_idx in range(n_batches):
+            start_idx = batch_idx * batch_size
+            end_idx = min(start_idx + batch_size, n_samples)
+            
+            X_batch = torch.FloatTensor(X_test[start_idx:end_idx]).to(device)
+            outputs = model(X_batch)
+            
+            _, batch_predictions = torch.max(outputs.data, 1)
+            batch_confidences = torch.max(outputs.data, 1)[0]
+            
+            all_predictions.extend(batch_predictions.cpu().numpy())
+            all_confidences.extend(batch_confidences.cpu().numpy())
+            
+            # Clear GPU cache
+            if device.type == 'cuda':
+                torch.cuda.empty_cache()
     
-    predictions = predictions.cpu().numpy()
-    confidences = confidences.cpu().numpy()
+    predictions = np.array(all_predictions)
+    confidences = np.array(all_confidences)
     
     return predictions, confidences
 
@@ -202,14 +326,47 @@ def main():
     
     # File upload
     st.sidebar.subheader("1. Data Upload")
-    uploaded_file = st.sidebar.file_uploader(
-        "Upload historical data (CSV/XLSX)", 
-        type=['csv', 'xlsx']
+    
+    # Option to use default data or upload custom data
+    data_source = st.sidebar.radio(
+        "Data Source",
+        ["Use Default Data", "Upload Custom File"]
     )
+    
+    uploaded_file = None
+    default_data_path = "XAUUSDm_M5_20150101_20251226.csv"
+    
+    if data_source == "Upload Custom File":
+        uploaded_file = st.sidebar.file_uploader(
+            "Upload historical data (CSV/XLSX)", 
+            type=['csv', 'xlsx']
+        )
+    else:
+        # Check if default file exists
+        if os.path.exists(default_data_path):
+            st.sidebar.success(f"✅ Using default data: {default_data_path}")
+            # Create a pseudo-uploaded file object
+            class DefaultFile:
+                def __init__(self, path):
+                    self.name = path
+                    self.path = path
+            uploaded_file = DefaultFile(default_data_path)
+        else:
+            st.sidebar.warning(f"⚠️ Default data file not found: {default_data_path}")
+            st.sidebar.info("Please upload a custom file or ensure the default data file exists.")
     
     # Training parameters
     st.sidebar.subheader("2. Training Parameters")
+    
+    # Data sampling
+    use_sample = st.sidebar.checkbox("Use Data Sample (Recommended for large datasets)", value=True)
+    if use_sample:
+        max_bars = st.sidebar.slider("Max Bars to Use", 10000, 200000, 50000, 10000)
+    else:
+        max_bars = None
+    
     epochs = st.sidebar.slider("Training Epochs", 10, 100, 20, 5)
+    batch_size = st.sidebar.slider("Batch Size", 16, 128, 32, 16)
     test_size = st.sidebar.slider("Test Set Size", 0.1, 0.4, 0.2, 0.05)
     sequence_length = st.sidebar.slider("Sequence Length", 30, 120, 60, 10)
     forward_bars = st.sidebar.slider("Forward Bars (Label)", 3, 10, 5, 1)
@@ -234,12 +391,20 @@ def main():
         if uploaded_file is not None:
             # Load data
             try:
-                if uploaded_file.name.endswith('.csv'):
+                # Check if it's the default file or an uploaded file
+                if hasattr(uploaded_file, 'path'):
+                    # Default file - load from path
+                    df = pd.read_csv(uploaded_file.path)
+                elif uploaded_file.name.endswith('.csv'):
                     df = pd.read_csv(uploaded_file)
                 else:
                     df = pd.read_excel(uploaded_file)
                 
                 st.success(f"✅ Loaded {len(df)} bars of data")
+                
+                # Handle tick_volume column (rename to volume for consistency)
+                if 'tick_volume' in df.columns and 'volume' not in df.columns:
+                    df['volume'] = df['tick_volume']
                 
                 # Validate required columns
                 required_cols = ['open', 'high', 'low', 'close', 'volume']
@@ -266,6 +431,8 @@ def main():
                 # Check for minimum bars
                 if len(df) < 5000:
                     st.warning(f"⚠️ Data has {len(df)} bars. Recommended: 5000+ bars for better training.")
+                elif len(df) > 100000:
+                    st.info(f"ℹ️ Large dataset detected ({len(df):,} bars). Consider using data sampling to reduce memory usage.")
                 
                 # Calculate indicators
                 if st.button("🔧 Calculate Technical Indicators", type="primary"):
@@ -314,14 +481,16 @@ def main():
             except Exception as e:
                 st.error(f"❌ Error loading data: {str(e)}")
         else:
-            st.info("👆 Upload a CSV or XLSX file to get started")
+            st.info("👆 Select 'Use Default Data' or upload a custom CSV/XLSX file to get started")
             st.markdown("""
-            **Required columns:**
+            **Default Data:** XAUUSD 5-minute data from 2015 to 2025
+            
+            **Or upload custom data with required columns:**
             - `open`: Opening price
             - `high`: High price
             - `low`: Low price
             - `close`: Closing price
-            - `volume`: Trading volume
+            - `volume`: Trading volume (or `tick_volume`)
             
             **Recommended:** 5000+ bars for optimal training
             """)
@@ -334,6 +503,11 @@ def main():
             st.warning("⚠️ Please load and process data first in the 'Data Overview' tab")
         else:
             df = st.session_state.df
+            
+            # Apply data sampling if enabled
+            if max_bars is not None and len(df) > max_bars:
+                st.info(f"📊 Sampling {max_bars:,} bars from {len(df):,} total bars (using most recent data)")
+                df = df.tail(max_bars).reset_index(drop=True)
             
             # Feature selection
             st.subheader("Feature Selection")
@@ -412,7 +586,7 @@ def main():
                 # Train model
                 st.subheader("Training Progress")
                 model, history = train_model_fn(
-                    model, X_train, y_train, epochs, device
+                    model, X_train, y_train, epochs, device, batch_size=batch_size
                 )
                 
                 st.session_state.model = model

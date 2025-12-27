@@ -4,7 +4,7 @@
 This Streamlit dashboard provides a user-friendly interface for training and evaluating the XAU-EA-MT5 Transformer model.
 
 ## Features
-✅ **Data Loading**: Upload CSV/XLSX files with historical OHLCV data  
+✅ **Data Loading**: Use default XAUUSD data or upload custom CSV/XLSX files  
 ✅ **Technical Indicators**: Automatic calculation of RSI, MACD, Bollinger Bands, ATR  
 ✅ **Label Creation**: Generate trading signals based on future price movement  
 ✅ **Train/Test Split**: Configurable data splitting for validation  
@@ -30,8 +30,9 @@ The dashboard will open in your default web browser at `http://localhost:8501`
 ## Usage Guide
 
 ### 1. Data Upload (Tab: Data Overview)
-- Click "Browse files" to upload a CSV or XLSX file
-- Required columns: `open`, `high`, `low`, `close`, `volume`
+- **Default Data**: Select "Use Default Data" to use the included XAUUSD 5-minute data from 2015-2025
+- **Custom Data**: Select "Upload Custom File" to browse and upload your own CSV or XLSX file
+- Required columns: `open`, `high`, `low`, `close`, `volume` (or `tick_volume`)
 - Recommended: 5000+ bars for optimal training
 - Click "Calculate Technical Indicators" to add RSI, MACD, Bollinger Bands, ATR
 
@@ -71,20 +72,23 @@ Your CSV/XLSX file should have these columns:
 | high | High price | Yes |
 | low | Low price | Yes |
 | close | Closing price | Yes |
-| volume | Trading volume | Yes |
+| volume | Trading volume | Yes* |
+| tick_volume | Tick volume (alternative to volume) | Yes* |
 | time | Timestamp (optional) | No |
+
+*Either `volume` or `tick_volume` is required
 
 Example CSV:
 ```csv
-time,open,high,low,close,volume
-2024-01-01 00:00:00,2045.50,2046.80,2044.20,2045.90,150
-2024-01-01 00:05:00,2045.90,2047.10,2045.30,2046.50,180
+time,open,high,low,close,tick_volume,spread,real_volume
+2024-07-24 12:10:00,2417.809,2418.479,2417.186,2417.62,558,179,0
+2024-07-24 12:15:00,2417.62,2418.10,2417.30,2417.85,180,175,0
 ...
 ```
 
-## Sample Data Template
+## Default Data
 
-A sample CSV template is provided in `sample_data_template.csv`. You can use this as a reference for formatting your own data.
+The dashboard includes `XAUUSDm_M5_20150101_20251226.csv` - XAUUSD 5-minute historical data from 2015 to December 2025. This data was downloaded directly from MT5 and contains over 1 million bars for comprehensive model training.
 
 ## Trading Signals
 

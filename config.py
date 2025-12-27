@@ -8,7 +8,7 @@ MT5_PASSWORD = "#Trader001"  # Set your MT5 password
 MT5_SERVER = "Exness-MT5Trial9"  # Set your MT5 server
 
 # Trading Parameters
-SYMBOL = "XAUUSD"
+SYMBOL = "XAUUSDm"
 TIMEFRAME = "M5"  # 5-minute timeframe
 LOT_SIZE = 0.01  # Trading lot size
 MAGIC_NUMBER = 234000  # Unique identifier for EA trades
