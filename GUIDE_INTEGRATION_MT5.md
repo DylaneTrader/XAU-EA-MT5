@@ -226,19 +226,26 @@ ls -lh transformer_ea_model.pth
 
 Ouvrez `config.py` avec un éditeur de texte (Notepad++, VSCode, etc.)
 
+**🔒 Important Sécurité**: 
+- Ne **jamais** partager vos identifiants MT5
+- Ne **jamais** commiter `config.py` avec de vrais identifiants dans Git
+- Utiliser `.env` ou variables d'environnement pour la production
+
 #### 1. Paramètres de Connexion MT5
 
 ```python
-# MT5 Connection Settings
-MT5_LOGIN = 297581462        # Votre numéro de compte MT5
-MT5_PASSWORD = "#Trader001"  # Votre mot de passe MT5
-MT5_SERVER = "Exness-MT5Trial9"  # Serveur de votre courtier
+# MT5 Connection Settings (EXEMPLE - remplacer par vos identifiants)
+MT5_LOGIN = 123456789        # Votre numéro de compte MT5
+MT5_PASSWORD = "VotreMotDePasse"  # Votre mot de passe MT5
+MT5_SERVER = "VotreBroker-Demo"  # Serveur de votre courtier
 ```
+
+**⚠️ ATTENTION: NE JAMAIS partager ou commiter vos vrais identifiants dans Git!**
 
 **Notes**:
 - Pour un **compte démo**, ces paramètres sont souvent optionnels
 - Pour un **compte réel**, ils sont **obligatoires**
-- Le serveur dépend de votre courtier (ex: "ICMarkets-Demo", "XM-Real")
+- Le serveur dépend de votre courtier (ex: "ICMarkets-Demo", "XM-Real", "Exness-MT5Trial9")
 
 #### 2. Paramètres de Trading
 
@@ -421,10 +428,10 @@ STOP_LOSS_PIPS = 700  # Au lieu de 500
 
 Modifier `config.py`:
 ```python
-# Utiliser identifiants RÉELS
-MT5_LOGIN = 123456789        # Votre compte RÉEL
-MT5_PASSWORD = "MotDePasse"  # Mot de passe RÉEL
-MT5_SERVER = "VotreBroker-Real"
+# Utiliser identifiants RÉELS (NE JAMAIS commiter dans Git!)
+MT5_LOGIN = 987654321            # Votre VRAI compte RÉEL
+MT5_PASSWORD = "Votre_MDP_Reel"  # Votre VRAI mot de passe
+MT5_SERVER = "VotreBroker-Real"  # Serveur RÉEL de votre courtier
 
 # Paramètres conservateurs
 LOT_SIZE = 0.01              # Commencer petit
@@ -500,10 +507,16 @@ Les logs sont affichés dans la console. Pour les sauvegarder:
 
 ```bash
 # Rediriger vers un fichier
+# Linux/macOS:
 python main.py > ea_log_$(date +%Y%m%d).txt 2>&1
 
-# Ou utiliser nohup (Linux/macOS)
+# Windows PowerShell:
+python main.py > ea_log_$(Get-Date -Format "yyyyMMdd").txt 2>&1
+
+# Ou utiliser nohup pour exécution en arrière-plan (Linux/macOS uniquement)
 nohup python main.py > ea.log 2>&1 &
+
+# Windows: Utiliser Task Scheduler ou créer un service pour exécution continue
 ```
 
 #### Analyser les Logs
