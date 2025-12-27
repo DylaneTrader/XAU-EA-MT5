@@ -2,6 +2,12 @@
 
 An advanced Expert Advisor (EA) for MetaTrader 5 that uses Transformer neural networks to trade XAUUSD (Gold). This EA leverages cutting-edge deep learning technology to analyze market patterns and make intelligent trading decisions.
 
+## 📖 Documentation
+
+- **[🇫🇷 Guide d'Intégration MT5 (French)](GUIDE_INTEGRATION_MT5.md)**: Complete step-by-step guide for integrating the EA into MT5
+- **[🏗️ Architecture Documentation](ARCHITECTURE.md)**: Technical architecture and system design
+- **[📊 Dashboard Guide](DASHBOARD_README.md)**: Training dashboard user guide
+
 ## Features
 
 - 🤖 **Transformer Neural Network**: Uses state-of-the-art Transformer architecture for price prediction
