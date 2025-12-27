@@ -235,9 +235,9 @@ Ouvrez `config.py` avec un éditeur de texte (Notepad++, VSCode, etc.)
 
 ```python
 # MT5 Connection Settings (EXEMPLE - remplacer par vos identifiants)
-MT5_LOGIN = 123456789        # Votre numéro de compte MT5
-MT5_PASSWORD = "VotreMotDePasse"  # Votre mot de passe MT5
-MT5_SERVER = "VotreBroker-Demo"  # Serveur de votre courtier
+MT5_LOGIN = YOUR_ACCOUNT_ID        # Remplacer par votre numéro de compte MT5
+MT5_PASSWORD = "YOUR_PASSWORD"     # Remplacer par votre mot de passe MT5
+MT5_SERVER = "YOUR_BROKER_SERVER"  # Remplacer par le serveur de votre courtier
 ```
 
 **⚠️ ATTENTION: NE JAMAIS partager ou commiter vos vrais identifiants dans Git!**
@@ -429,9 +429,9 @@ STOP_LOSS_PIPS = 700  # Au lieu de 500
 Modifier `config.py`:
 ```python
 # Utiliser identifiants RÉELS (NE JAMAIS commiter dans Git!)
-MT5_LOGIN = 987654321            # Votre VRAI compte RÉEL
-MT5_PASSWORD = "Votre_MDP_Reel"  # Votre VRAI mot de passe
-MT5_SERVER = "VotreBroker-Real"  # Serveur RÉEL de votre courtier
+MT5_LOGIN = YOUR_REAL_ACCOUNT_ID     # Remplacer par votre VRAI compte RÉEL
+MT5_PASSWORD = "YOUR_REAL_PASSWORD"  # Remplacer par votre VRAI mot de passe
+MT5_SERVER = "YOUR_REAL_BROKER"      # Remplacer par le serveur RÉEL de votre courtier
 
 # Paramètres conservateurs
 LOT_SIZE = 0.01              # Commencer petit
@@ -511,7 +511,7 @@ Les logs sont affichés dans la console. Pour les sauvegarder:
 python main.py > ea_log_$(date +%Y%m%d).txt 2>&1
 
 # Windows PowerShell:
-python main.py > ea_log_$(Get-Date -Format "yyyyMMdd").txt 2>&1
+python main.py *> "ea_log_$(Get-Date -Format 'yyyyMMdd').txt"
 
 # Ou utiliser nohup pour exécution en arrière-plan (Linux/macOS uniquement)
 nohup python main.py > ea.log 2>&1 &
