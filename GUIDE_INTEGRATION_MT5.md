@@ -234,10 +234,11 @@ Ouvrez `config.py` avec un éditeur de texte (Notepad++, VSCode, etc.)
 #### 1. Paramètres de Connexion MT5
 
 ```python
-# MT5 Connection Settings (EXEMPLE - remplacer par vos identifiants)
-MT5_LOGIN = YOUR_ACCOUNT_ID        # Remplacer par votre numéro de compte MT5
-MT5_PASSWORD = "YOUR_PASSWORD"     # Remplacer par votre mot de passe MT5
-MT5_SERVER = "YOUR_BROKER_SERVER"  # Remplacer par le serveur de votre courtier
+# MT5 Connection Settings
+# ⚠️ REMPLACER ces placeholders par vos véritables identifiants
+MT5_LOGIN = YOUR_ACCOUNT_ID        # Remplacer: votre numéro de compte MT5
+MT5_PASSWORD = "YOUR_PASSWORD"     # Remplacer: votre mot de passe MT5
+MT5_SERVER = "YOUR_BROKER_SERVER"  # Remplacer: le serveur de votre courtier
 ```
 
 **⚠️ ATTENTION: NE JAMAIS partager ou commiter vos vrais identifiants dans Git!**
@@ -428,10 +429,11 @@ STOP_LOSS_PIPS = 700  # Au lieu de 500
 
 Modifier `config.py`:
 ```python
-# Utiliser identifiants RÉELS (NE JAMAIS commiter dans Git!)
-MT5_LOGIN = YOUR_REAL_ACCOUNT_ID     # Remplacer par votre VRAI compte RÉEL
-MT5_PASSWORD = "YOUR_REAL_PASSWORD"  # Remplacer par votre VRAI mot de passe
-MT5_SERVER = "YOUR_REAL_BROKER"      # Remplacer par le serveur RÉEL de votre courtier
+# ⚠️ PRODUCTION: Remplacer ces valeurs par vos VRAIS identifiants
+# NE JAMAIS commiter ce fichier avec de vraies credentials dans Git!
+MT5_LOGIN = YOUR_REAL_ACCOUNT_ID     # À remplacer: votre compte RÉEL
+MT5_PASSWORD = "YOUR_REAL_PASSWORD"  # À remplacer: votre mot de passe RÉEL
+MT5_SERVER = "YOUR_REAL_BROKER"      # À remplacer: serveur RÉEL de votre courtier
 
 # Paramètres conservateurs
 LOT_SIZE = 0.01              # Commencer petit
